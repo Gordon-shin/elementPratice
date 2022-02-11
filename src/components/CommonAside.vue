@@ -5,6 +5,11 @@
     <el-button @click="isCollapse=!isCollapse" ref="s" :type="isCollapse?'primary':''" >></el-button>
   </el-radio-group>
   <el-menu default-active="1-4-1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
+    <!--从没有子菜单的数据中遍历所有的菜单-->
+    <el-menu-item v-for="item in noChildren" :index="item.path" :key="item.path">
+      <i :class="'el-icon-'+item.icon"></i>
+      <span slot="title">{{item.label}}</span>
+    </el-menu-item>
     <el-submenu index="1">
       <template slot="title">
         <i class="el-icon-location"></i>
@@ -23,18 +28,8 @@
         <el-menu-item index="1-4-1">选项1</el-menu-item>
       </el-submenu>
     </el-submenu>
-    <el-menu-item index="2">
-      <i class="el-icon-menu"></i>
-      <span slot="title">导航二</span>
-    </el-menu-item>
-    <el-menu-item index="3" disabled>
-      <i class="el-icon-document"></i>
-      <span slot="title">导航三</span>
-    </el-menu-item>
-    <el-menu-item index="4">
-      <i class="el-icon-setting"></i>
-      <span slot="title">导航四</span>
-    </el-menu-item>
+
+
   </el-menu>
   </div>
 </template>
@@ -42,18 +37,68 @@
 
   <script>
     export default {
+      //除了data属性VueComponent组件需要使用函数形式，其他的属性需要使用属性方式
       data() {
         return {
           isCollapse: true,
+          //菜单数据由接口返回
+          menu:[
+            {
+              path:'/',
+              name:'home',
+              label:'首页',
+              icon:'s-home',
+              url:'Home/Home'
+            },
+            {
+              path:'/mall',
+              name:'mall',
+              label:'商品管理',
+              icon:'video-play',
+              url:'MallManage/MallManage'
+            },
+            {
+              path:'/user',
+              name:'usr',
+              label:'用户管理',
+              icon:'user',
+              url:'UserMange/UserMange'
+            },
+            {
+              label: '其他',
+              icon: 'location',
+              children:[
+                  {
+                    path:'/page1',
+                    name:'page1',
+                    label:'页面1',
+                    icon:'setting',
+                    url:'Other/PageOne'
+                  },
+                {
+                  path:'/page2',
+                  name:'page2',
+                  label:'页面2',
+                  icon:'setting',
+                  url:'Other/PageTwo'
+                }
+              ]
+            }
+          ]
         };
       },
-      computed(){
+      computed:{
         //计算属性是为了在页面中不需要更多的表达式
-       return{
         // success:"success",
         // primary:"primary"
-
-       }
+         //过滤接口中没有子菜单的
+         noChildren(){
+           console.log(this.menu.filter(item=>!item.children))
+           return this.menu.filter(item=>!item.children)
+         },
+         hasChildren(){
+           return this.menu.filter(item=>item.children)
+         }
       },
       methods: {
         handleOpen(key, keyPath) {
